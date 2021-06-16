@@ -2,9 +2,8 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-from tensorflow.keras.preprocessing.image import ImageDataGenerator
-
 sns.set(style="whitegrid")
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
 import os
 import glob as gb
 import cv2
@@ -20,17 +19,16 @@ trainpath = '/content/seg_train/'
 testpath = '/content/seg_test/'
 predpath = '/content/seg_pred/'
 
+
 """
 Integer encoding - Dictionary with 6 categories & function to retreive the encoding
 """
 code_to_num = {'buildings': 0, 'forest': 1, 'glacier': 2, 'mountain': 3, 'sea': 4, 'street': 5}
 num_to_code = {0: 'buildings', 1: 'forest', 2: 'glacier', 3: 'mountain', 4: 'sea', 5: 'street'}
 
-
 def get_code(n):
     if n in num_to_code:
         return num_to_code[n]
-
 
 def get_num(c):
     if c in code_to_num:
@@ -40,7 +38,6 @@ def get_num(c):
 """
 Reading & Resizing of test, train & pred images without loss of accuracy
 """
-
 # size of image
 s = 100
 
@@ -78,6 +75,7 @@ X_pred_array = np.array(X_pred)
 y_train = np.array(y_train)
 y_test = np.array(y_test)
 
+
 """
 Visualsation of required Prediction Images
 """
@@ -86,6 +84,7 @@ for n , i in enumerate(list(np.random.randint(0,len(X_pred),36))) :
     plt.subplot(6,6,n+1)
     plt.imshow(X_pred[i])
     plt.axis('off')
+    
 
 """
 CNN Architecture for image classification 
@@ -103,12 +102,12 @@ KerasModel.add(layers.Flatten())
 KerasModel.add(layers.Dropout(0.5))
 KerasModel.add(layers.Dense(512, activation='relu'))
 KerasModel.add(layers.Dense(6, activation='softmax'))
-
 KerasModel.compile(optimizer=optimizers.Adam(lr=0.001), loss=['sparse_categorical_crossentropy'], metrics=['accuracy'])
 
 #Model Summary
 print('Model Details are : ')
 print(KerasModel.summary())
+
 
 """
 Training of model & Evaluating Test Loss & Accuracy
@@ -118,14 +117,16 @@ ModelLoss, ModelAccuracy = KerasModel.evaluate(X_test, y_test)
 print('Test Loss is {}'.format(ModelLoss))
 print('Test Accuracy is {}'.format(ModelAccuracy))
 
+
 """
 Obtaining Prediction for the unlabeled data
 """
 y_pred = KerasModel.predict(X_test)
 y_result = KerasModel.predict(X_pred_array)
 
+
 """
-random predicted pictures & its predicting category
+Random predicted pictures & its predicting category
 """
 plt.figure(figsize=(20, 20))
 for n, i in enumerate(list(np.random.randint(0, len(X_pred), 36))):
@@ -133,6 +134,8 @@ for n, i in enumerate(list(np.random.randint(0, len(X_pred), 36))):
     plt.imshow(X_pred_array[i])
     plt.axis('off')
     plt.title(get_code(np.argmax(y_result[i])))
+    
+ 
 
 # Transfer Learning Approach - Using ResNet50
 conv_base = ResNet50(weights='imagenet', include_top=False, input_shape=(100, 100, 3))
@@ -154,6 +157,8 @@ for layer in conv_base.layers[:143]:
     layer.trainable = False
 
 conv_base.trainable = True
+
+
 """
 Transfer Learning Model
 """
@@ -167,12 +172,11 @@ KerasModel2.add(layers.Dense(6, activation='softmax'))
 KerasModel2.compile(optimizer=optimizers.Adam(learning_rate=0.00001), loss=['sparse_categorical_crossentropy'],
                     metrics=['accuracy'])
 
+
 """
 Training of model & Evaluating Test Loss & Accuracy
 """
 ThisModel = KerasModel2.fit(img_iter, epochs=3, steps_per_epoch=len(X_train) / batch_size)
-
 ModelLoss, ModelAccuracy = KerasModel2.evaluate(X_test, y_test)
-
 print('Test Loss is {}'.format(ModelLoss))
 print('Test Accuracy is {}'.format(ModelAccuracy))
