@@ -141,12 +141,12 @@ for n, i in enumerate(list(np.random.randint(0, len(X_pred), 36))):
 conv_base = ResNet50(weights='imagenet', include_top=False, input_shape=(100, 100, 3))
 
 datagen = ImageDataGenerator(
-    rotation_range=10,  # randomly rotate images in the range (degrees, 0 to 180)\n",
-    zoom_range=0.1,  # Randomly zoom image\n",
-    width_shift_range=0.1,  # randomly shift images horizontally (fraction of total width)\n",
-    height_shift_range=0.1,  # randomly shift images vertically (fraction of total height)\n",
-    horizontal_flip=True,  # randomly flip images horizontally\n",
-    vertical_flip=False,  # Don't randomly flip images vertically\n",
+    rotation_range=10,                  # randomly rotate images in the range (degrees, 0 to 180)\n",
+    zoom_range=0.1,                     # Randomly zoom image\n",
+    width_shift_range=0.1,              # randomly shift images horizontally (fraction of total width)\n",
+    height_shift_range=0.1,             # randomly shift images vertically (fraction of total height)\n",
+    horizontal_flip=True,               # randomly flip images horizontally\n",
+    vertical_flip=False,                # Don't randomly flip images vertically\n",
 )
 
 batch_size = 32
